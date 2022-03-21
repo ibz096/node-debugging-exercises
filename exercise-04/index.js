@@ -13,15 +13,21 @@ app.get("/cards", (req, res) => {
   });
 });
 
-app.get("/cards/:id", (req, res) => {
+app.get("/cards/:id", async (req, res) => {
   const id = req.params.id;
-  axios.get(cardsUrl).then(({ data }) => {
+  try {
+    const { data, status } = await axios.get(cardsUrl);
+    console.log(`Status code of GIST Request: ${status}`);
     for (const item of data) {
-      if (item.id === id) {
+      if (item.id === parseInt(id)) {
         res.status(200).json(item);
+      } else {
+        return res.status(404).json({});
       }
     }
-  });
+  } catch (err) {
+    console.error(err.message);
+  }
 });
 
 app.listen(3000, () => {
